@@ -3,6 +3,7 @@ import os
 from motor.motor_tornado import MotorClient
 from tornado.log import app_log
 
+
 class UserRepository:
     def __init__(self):
         db_url = os.getenv("MONGODB_URL")

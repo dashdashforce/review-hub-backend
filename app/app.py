@@ -18,7 +18,7 @@ from . import settings
 
 
 class ReviewHubApplication(Application):
-    name = '--force ReviewHub app'
+    name = settings.NAME
     version = __version__
 
     debug = Bool(

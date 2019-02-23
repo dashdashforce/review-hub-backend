@@ -1,10 +1,12 @@
 from urllib.parse import urlencode
 
 from tornado.escape import json_decode, json_encode
-from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+from tornado.httpclient import AsyncHTTPClient, HTTPRequest, HTTPError, HTTPResponse
 from tornado.log import app_log
 
 from .. import settings
+from .utils import get_debug_request
+import json
 
 
 class GithubClient:
@@ -16,9 +18,10 @@ class GithubClient:
         request = self._build_authorization_request(code)
         try:
             response = await self.client.fetch(request)
-        except Exception as e:
+        except HTTPError as e:
             app_log.error(
-                'GithubClient: error while authorization: {}'.format(e)
+                'GithubClient: error while authorization: {}, {}'.format(
+                    e, e.response.body)
             )
             raise e
         return json_decode(response.body)
@@ -40,20 +43,40 @@ class GithubClient:
         request = self._build_fetch_user_request(access_token)
         try:
             response = await self.client.fetch(request)
-        except Exception as e:
+        except HTTPError as e:
             app_log.error(
-                'GithubClient: error while fetch user: {}'.format(e)
+                'GithubClient: error while fetch user: {}, {}'.format(
+                    e, e.response.body)
             )
             raise e
-        return json_decode(response.body)
+        return json_decode(response.body)['data']
 
     def _build_fetch_user_request(self, access_token):
         url = 'https://api.github.com/graphql'
-        json = {}
-        headers = {'Authorization': 'token {}'.format(access_token)}
+        json_payload = json.dumps({
+            'query': '''{ 
+                viewer {
+                    avatarUrl(size: 500),
+                    id
+                }
+            }'''
+        })
 
-        return HTTPRequest(
+        headers = {
+            'Authorization': 'token {}'.format(access_token),
+            'Content-Type': 'application/json',
+            'User-Agent': settings.USER_AGENT
+        }
+
+        request = HTTPRequest(
             url=url,
-            body=json_encode(json),
+            method='POST',
+            body=json_payload,
             headers=headers
         )
+
+        app_log.debug(
+            'Github GraphQL request {}'.format(get_debug_request(request))
+        )
+
+        return request

@@ -7,10 +7,11 @@ from tornado.escape import json_decode
 from .services import service_locator
 
 from .cors import CORSRequestHandler
-
+from .middleware import jwtauth
 auth_service = service_locator.auth_service
 
 
+@jwtauth
 class MainApplicationHandler(CORSRequestHandler, TornadoGraphQLHandler):
 
     async def execute_graphql_request(self, method, query, variables, operation_name, show_graphiql=False):
@@ -22,10 +23,10 @@ class MainApplicationHandler(CORSRequestHandler, TornadoGraphQLHandler):
 
 class AuthHandler(CORSRequestHandler):
 
-    def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs):
         body = json_decode(self.request.body)
         app_log.debug("Prepare auth {}".format(body))
-        encoded = auth_service.get_token(body['code'])
+        encoded = await auth_service.get_token(body['code'])
 
         app_log.debug("In Auth request")
         response = {'token': encoded.decode('utf8')}

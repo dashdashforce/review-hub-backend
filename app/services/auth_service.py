@@ -1,4 +1,4 @@
-import jwt
+from jwt import encode
 import datetime
 from tornado.log import app_log
 from .. import settings
@@ -15,7 +15,7 @@ class AuthService:
         access_token = 'e10c0ab23e9e5da5d54f3f17e58994bcaf98d227'
         user = await self.github_client.fetch_user(access_token)
         app_log.debug('Github user: {}'.format(user))
-        return jwt.encode({
+        return encode({
             'id': user['viewer']['id'],
             'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=settings.AUTH_EXPIRE)},
             settings.SECRET,

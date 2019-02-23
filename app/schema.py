@@ -11,7 +11,7 @@ class Query(graphene.ObjectType):
     test = graphene.String()
 
     def resolve_test(self, info):
-        return 'Hello world'
+        return 'Hello world {}'.format(info.context.authentication)
 
 
 schema = graphene.Schema(query=Query)

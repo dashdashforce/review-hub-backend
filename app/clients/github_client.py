@@ -5,7 +5,7 @@ from tornado.httpclient import AsyncHTTPClient, HTTPRequest, HTTPError, HTTPResp
 from tornado.log import app_log
 
 from .. import settings
-from .utils import get_debug_request
+from .utils import get_debug_request,build_graphql_request
 import json
 
 
@@ -52,8 +52,7 @@ class GithubClient:
         return json_decode(response.body)['data']
 
     def _build_fetch_user_request(self, access_token):
-        url = 'https://api.github.com/graphql'
-        json_payload = json.dumps({
+        return build_graphql_request(access_token, {
             'query': '''{ 
                 viewer {
                     login,
@@ -62,22 +61,3 @@ class GithubClient:
                 }
             }'''
         })
-
-        headers = {
-            'Authorization': 'token {}'.format(access_token),
-            'Content-Type': 'application/json',
-            'User-Agent': settings.USER_AGENT
-        }
-
-        request = HTTPRequest(
-            url=url,
-            method='POST',
-            body=json_payload,
-            headers=headers
-        )
-
-        app_log.debug(
-            'Github GraphQL request {}'.format(get_debug_request(request))
-        )
-
-        return request

@@ -5,7 +5,7 @@ import sys
 
 import tornado.ioloop
 import tornado.web
-from dotenv import find_dotenv, load_dotenv
+
 from tornado import process
 from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter, access_log, app_log, gen_log
@@ -14,8 +14,7 @@ from traitlets.config.application import Application, catch_config_error
 
 from .version import __version__
 from .web_app import ReviewHubWebApplication
-
-load_dotenv(find_dotenv())
+from . import settings
 
 
 class ReviewHubApplication(Application):
@@ -23,7 +22,7 @@ class ReviewHubApplication(Application):
     version = __version__
 
     debug = Bool(
-        os.getenv('DEBUG', default=False) == 'True',
+        settings.DEBUG,
         config=False,
         help='Debug mode'
     )
@@ -72,7 +71,7 @@ class ReviewHubApplication(Application):
     )
 
     port = Integer(
-        int(os.getenv('PORT')), config=True,
+        settings.PORT, config=True,
         help='The port the server will listen on.'
     )
 

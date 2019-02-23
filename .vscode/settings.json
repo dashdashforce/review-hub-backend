@@ -1,0 +1,8 @@
+{
+    {
+        "python.pythonPath": "venv/bin/python",
+        "python.linting.pylintEnabled": true,
+        "python.formatting.autopep8Path": "autopep8",
+        "python.linting.lintOnSave": true
+    }
+}

@@ -56,6 +56,7 @@ class GithubClient:
         json_payload = json.dumps({
             'query': '''{ 
                 viewer {
+                    login,
                     avatarUrl(size: 500),
                     id
                 }

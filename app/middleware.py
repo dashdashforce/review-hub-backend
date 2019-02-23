@@ -1,6 +1,7 @@
 from tornado.log import app_log
 from tornado.escape import json_decode, json_encode
-import jwt
+from jwt import decode
+
 from . import settings
 
 secret_key = "my_secret_key"
@@ -17,7 +18,6 @@ def jwtauth(handler_class):
     ''' Handle Tornado JWT Auth '''
     def wrap_execute(handler_execute):
         def require_auth(handler, kwargs):
-
             auth = handler.request.headers.get('Authorization')
             if auth:
                 parts = auth.split()
@@ -47,7 +47,7 @@ def jwtauth(handler_class):
                 token = parts[1]
                 try:
                     app_log.debug('Decoding jwt')
-                    data = jwt.decode(
+                    data = decode(
                         token,
                         settings.SECRET,
                         algorithms=['HS256'],

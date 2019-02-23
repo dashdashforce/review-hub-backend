@@ -7,3 +7,6 @@ install-dev:
 
 run:
 	./venv/bin/python run.py
+
+run-docker:
+	docker-compose up --build

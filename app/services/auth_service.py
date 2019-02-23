@@ -5,11 +5,16 @@ from .. import settings
 
 class AuthService:
 
-    def get_token(self, code):
+    def __init__(self, github_client):
+        self.github_client = github_client
+
+    async def get_token(self, code):
+        auth_response = await self.github_client.authorize(code)
+
         return jwt.encode({
             'some': 'payload',
-            'a': {2: True},
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=22)},
+            'id': {2: True},
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=settings.AUTH_EXPIRE)},
             settings.SECRET,
             algorithm='HS256'
         )

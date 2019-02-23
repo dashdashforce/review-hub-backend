@@ -10,18 +10,19 @@ class RequestRepository:
         db_name = os.getenv("MONGODB_DB")
         self.collection = MotorClient(db_url)[db_name].request
 
-    async def get_requests_by_user(self, user_id, limit=None):
-        # filter by update date
-        return {{'name': 'new','userId': user_id,'status': 0}, {'name': 'inreview','userId': user_id,'status': 2},{'name': 'closed','userId': user_id,'status': 1}}
+    async def get_request(self, request_id):
+        return await self.collection.find_one({'_id': request_id})
 
-    async def get_reviewer_liked_commented_requests(self, user_id):
-        return {{'name': 'closed','userId': user_id,'status': 1}}
+    async def create_request(self, request): 
+        try:
+            await self.collection.insert_one(request)
+        except Exception as e:
+            app_log.warn(
+                'Cannot save pull request {}'.format(request))
 
-    async def get_all_reviewer_commented_requests(self, user_id):
-        return {{'name': 'new','userId': user_id,'status': 0}, {'name': 'inreview','userId': user_id,'status': 2},{'name': 'closed','userId': user_id,'status': 1}}
-
-    async def create_request(self): 
-        return True
-
-    async def comment_request(self, request_id, comment): 
-        return True
+    async def update_request(self, request):
+        try:
+            await self.collection.update_one({'_id': request['_id']}, {"$set": request}, upsert=False)
+        except Exception as e:
+            app_log.warn(
+                'Cannot update pull request {}'.format(request))            

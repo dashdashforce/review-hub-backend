@@ -12,7 +12,11 @@ class UserRepository:
         self.data = []
 
     async def get_user(self, user_id):
-        return self.data[user_id]
+        return await self.collection.find_one({'_id': user_id})
 
-    async def create_user(self, user_id, user_data):
-        self.data[user_id] = user_data
+    async def create_user(self, user_entity):
+        try:
+            await self.collection.insert_one(user_entity)
+        except Exception as e:
+            app_log.warn(
+                'Cannot save user {}'.format(user_entity))

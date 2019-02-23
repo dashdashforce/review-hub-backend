@@ -20,7 +20,7 @@ class MainApplicationHandler(CORSRequestHandler, TornadoGraphQLHandler):
         )
 
 
-class AuthHandler(RequestHandler):
+class AuthHandler(CORSRequestHandler):
     def prepare(self):
         body = json_decode(self.request.body)
         app_log.debug("Prepare auth {}".format(body))

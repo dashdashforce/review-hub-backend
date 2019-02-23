@@ -53,10 +53,10 @@ class PullRequest(graphene.ObjectType):
             pr_dict['comments']
         )
 
-    async def resolve_langs(self):
+    def resolve_langs(self):
         return map(Language.map, [])
     
-    async def resolve_comments(self):
+    def resolve_comments(self):
         return map(Comment.map, [])
 
 class User(graphene.ObjectType):
@@ -66,15 +66,21 @@ class User(graphene.ObjectType):
     langs = graphene.List(Language)
     pull_requests = graphene.List(PullRequest)
 
-    async def resolve_langs(self):
+    def resolve_langs(self):
         return map(Language.map, [])
+
+    def resolve_pull_requests(self):
+        return map(PullRequest.map, [])
 
 class Query(graphene.ObjectType):
     user = graphene.Field(User, id=graphene.String())
 
     pull_request = graphene.Field(PullRequest, id=graphene.String())
 
-    async def resolve_pull_request(self, info):
+    def resolve_pull_user(self, info):
+        return User({})
+
+    def resolve_pull_request(self, info):
         return PullRequest.map({})
 
 

@@ -21,17 +21,43 @@ class Language(graphene.ObjectType):
 
 class Comment(graphene.ObjectType):
     text = graphene.String()
-    reviewerId = graphene.String()
+    reviewer_id = graphene.String()
     status = graphene.String()
+
+    @classmethod
+    def map(cls, comment_dict):
+        return Comment(
+            comment_dict['text'],
+            comment_dict['reviewer_id'],
+            comment_dict['status']
+            )
 
 class PullRequest(graphene.ObjectType):
     id = graphene.String()
     name = graphene.String()
     code = graphene.String()
-    userId = graphene.String()
+    user_id = graphene.String()
     status = graphene.String()
     langs = graphene.List(Language)
     comments = graphene.List(Comment)
+
+    @classmethod
+    def map(cls, pr_dict):
+        return PullRequest(
+            pr_dict['id'],
+            pr_dict['name'],
+            pr_dict['code'],
+            pr_dict['user_id'],
+            pr_dict['status'],
+            pr_dict['langs'],
+            pr_dict['comments']
+        )
+
+    async def resolve_langs(self):
+        return map(Language.map, [])
+    
+    async def resolve_comments(self):
+        return map(Comment.map, [])
 
 class User(graphene.ObjectType):
     id = graphene.String()
@@ -40,13 +66,16 @@ class User(graphene.ObjectType):
     langs = graphene.List(Language)
     pull_requests = graphene.List(PullRequest)
 
+    async def resolve_langs(self):
+        return map(Language.map, [])
+
 class Query(graphene.ObjectType):
     user = graphene.Field(User, id=graphene.String())
 
     pull_request = graphene.Field(PullRequest, id=graphene.String())
 
-    def resolve_test(self, info):
-        return 'Hello world {}'.format(info.context.authentication)
+    async def resolve_pull_request(self, info):
+        return PullRequest.map({})
 
 
 

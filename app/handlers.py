@@ -21,12 +21,12 @@ class MainApplicationHandler(CORSRequestHandler, TornadoGraphQLHandler):
 
 
 class AuthHandler(CORSRequestHandler):
-    def prepare(self):
-        body = json_decode(self.request.body)
-        app_log.debug("Prepare auth {}".format(body))
-        self.encoded = auth_service.get_token(body['code'])
 
     def post(self, *args, **kwargs):
+        body = json_decode(self.request.body)
+        app_log.debug("Prepare auth {}".format(body))
+        encoded = auth_service.get_token(body['code'])
+
         app_log.debug("In Auth request")
-        response = {'token': self.encoded.decode('utf8')}
+        response = {'token': encoded.decode('utf8')}
         self.write(response)

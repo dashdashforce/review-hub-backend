@@ -12,5 +12,8 @@ class RequestRepository:
     async def get_requests_by_user(self, user_id):
         return {{'name': 'new','userId': user_id,'status': 0}, {'name': 'inreview','userId': user_id,'status': 2},{'name': 'closed','userId': user_id,'status': 1}}
 
-    async def get_requests_commented(self, user_id, is_liked):
+    async def get_reviewer_liked_commented_requests(self, user_id):
+        return {{'name': 'closed','userId': user_id,'status': 1}}
+
+    async def get_all_reviewer_commented_requests(self, user_id):
         return {{'name': 'new','userId': user_id,'status': 0}, {'name': 'inreview','userId': user_id,'status': 2},{'name': 'closed','userId': user_id,'status': 1}}

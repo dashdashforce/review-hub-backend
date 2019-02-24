@@ -33,7 +33,7 @@ class AuthService:
                     pr['repo_name'] = repo['name']
                     pr['langs'] = repo['languages']['nodes']
                     prs.append(self.pr_transformer.create_entity(pr))
-            await self.pr_repository.create_many_request(prs)
+            await self.pr_repository.create_many_requests(prs)
             
 
         else:

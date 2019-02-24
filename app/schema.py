@@ -57,11 +57,10 @@ class PullRequest(graphene.ObjectType):
             pr_dict['body'],
             pr_dict['user_id'],
             pr_dict['status'],
-            pr_dict['repo_name']
+            pr_dict['repo_name'],
+            map(Language.map, pr_dict['langs'])
         )
 
-    def resolve_langs(self, info):
-        return map(Language.map, [])
 
     def resolve_comments(self):
         return map(Comment.map, [])

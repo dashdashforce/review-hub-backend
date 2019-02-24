@@ -53,11 +53,33 @@ class GithubClient:
 
     def _build_fetch_user_request(self, access_token):
         return build_graphql_request(access_token, {
-            'query': '''{ 
-                viewer {
-                    login,
-                    avatarUrl(size: 500),
-                    id
-                }
+            'query': '''viewer {
+                            avatarUrl(size: 500),
+                            id
+                            email
+                            login
+                            repositories(first:100) {
+                            nodes {
+                                name
+                                languages(first:10) {
+                                    nodes {
+                                        name
+                                    }
+                                }
+                                pullRequests(first:100, states:[OPEN]) {
+                                    nodes {
+                                        id
+                                        body
+                                        state
+                                        commits(first:10) {
+                                            nodes {
+                                                url
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
             }'''
         })

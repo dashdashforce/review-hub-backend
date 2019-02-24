@@ -6,10 +6,11 @@ class RequestTransformer(BaseEntityTransformer):
         return {
             '_id': gitdata['id'],
             'user_id': gitdata['user_id'],
-            'name': 'temp',
+            'name': gitdata['title'],
+            'body': gitdata['body'],
             'repo_name': gitdata['repo_name'],
             'status': 0,
-            'langs': [],
+            'langs': gitdata['langs'],
             'commits': gitdata['commits']['nodes'],
             'reviewers': [],
             'comments': [],

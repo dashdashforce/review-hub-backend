@@ -8,7 +8,7 @@ class RequestRepository:
     def __init__(self):
         db_url = os.getenv("MONGODB_URL")
         db_name = os.getenv("MONGODB_DB")
-        self.collection = MotorClient(db_url)[db_name].request
+        self.collection = MotorClient(db_url)[db_name].pull_requests
 
     async def get_request(self, request_id):
         return await self.collection.find_one({'_id': request_id})
@@ -26,3 +26,10 @@ class RequestRepository:
         except Exception as e:
             app_log.warn(
                 'Cannot update pull request {}'.format(request))            
+
+    async def create_many_requests(self, psr):
+        try:
+            await self.collection.insert_many(psr)
+        except Exception as e:
+            app_log.warn(
+                'Cannot save many pull requests {}'.format(psr))                  

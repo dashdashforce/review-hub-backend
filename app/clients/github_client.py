@@ -84,6 +84,7 @@ class GithubClient:
                                 pullRequests(first: 100, states: [OPEN]) {
                                     nodes {
                                         id
+                                        title
                                         body
                                         state
                                         commits(first: 10) {

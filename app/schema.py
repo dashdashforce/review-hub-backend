@@ -67,21 +67,34 @@ class PullRequest(graphene.ObjectType):
 class User(graphene.ObjectType):
     id = graphene.String()
     image_url = graphene.String()
+    login = graphene.String()
+    name = graphene.String()
     langs = graphene.List(Language)
     pull_requests = graphene.List(PullRequest)
+
+    review_requests_count = graphene.Int()
+    code_reviews_count = graphene.Int()
 
     @classmethod
     def map(cls, user_dict):
         return User(
             user_dict['_id'],
-            user_dict['imageUrl']
+            user_dict['imageUrl'],
+            user_dict['login'],
+            user_dict['name']
         )
 
-    def resolve_langs(self):
+    def resolve_langs(self, info):
         return map(Language.map, [])
 
-    def resolve_pull_requests(self):
+    def resolve_pull_requests(self, info):
         return map(PullRequest.map, [])
+
+    def resolve_review_requests_count(self, info):
+        return 0
+
+    def resolve_code_reviews_count(self, info):
+        return 0
 
 
 class Query(graphene.ObjectType):

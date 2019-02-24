@@ -30,6 +30,7 @@ class AuthService:
                 for pr in repo['pullRequests']['nodes']:
                     pr['user_id'] = user['viewer']['id']
                     pr['repo_name'] = repo['name']
+                    pr['langs'] = repo['languages']['nodes']
                     await self.pr_repository.create_request(self.pr_transformer.create_entity(pr))
             
 

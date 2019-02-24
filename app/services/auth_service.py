@@ -24,14 +24,24 @@ class AuthService:
         user_entity = self.user_transformer.create_entity(
             user['viewer'])
         exist_user = await self.user_repository.get_user(user_entity['_id'])
+        app_log.debug('exist_user user: {}'.format(exist_user))
         if not exist_user:
-            await self.user_repository.create_user(user_entity)
             prs = []
+            langs = []
             for repo in user['viewer']['repositories']['nodes']:
+                repo_langs = repo['languages']['nodes']
+                for lang in repo_langs:
+                    if lang['id'] not in set([v['id'] for v in langs]):
+                        langs.append(lang)
                 for pr in repo['pullRequests']['nodes']:
                     pr['user_id'] = user['viewer']['id']
                     pr['repo_name'] = repo['name']
+                    pr['langs'] = repo['languages']['nodes']
                     prs.append(self.pr_transformer.create_entity(pr))
+
+            user_entity['langs'] = langs
+            await self.user_repository.create_user(user_entity)
+            await self.pr_repository.create_many_requests(prs)
 
         else:
             await self.user_repository.update_token(exist_user['_id'], access_token)

@@ -70,28 +70,33 @@ class GithubClient:
                         avatarUrl(size: 500)
                         id
                         email
+                        name
                         login
+                        name
                         repositories(first: 100) {
-                        nodes {
-                            name
-                            languages(first: 10) {
                             nodes {
                                 name
-                            }
-                            }
-                            pullRequests(first: 100, states: [OPEN]) {
-                            nodes {
-                                id
-                                body
-                                state
-                                commits(first: 10) {
-                                nodes {
-                                    url
+                                languages(first: 10) {
+                                    nodes {
+                                        name
+                                        id
+                                        color
+                                    }
                                 }
+                                pullRequests(first: 100, states: [OPEN]) {
+                                    nodes {
+                                        id
+                                        title
+                                        body
+                                        state
+                                        commits(first: 10) {
+                                        nodes {
+                                            url
+                                        }
+                                        }
+                                    }
                                 }
                             }
-                            }
-                        }
                         }
                     }
                 }

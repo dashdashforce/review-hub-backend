@@ -74,7 +74,7 @@ class User(graphene.ObjectType):
     def map(cls, user_dict):
         return User(
             user_dict['_id'],
-            user_dict['image_url']
+            user_dict['imageUrl']
         )
 
     def resolve_langs(self):

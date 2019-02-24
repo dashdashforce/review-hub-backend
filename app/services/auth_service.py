@@ -10,7 +10,7 @@ class AuthService:
         self.github_client = github_client
         self.user_repository = user_repository
         self.user_transformer = user_transformer
-        
+
         self.pr_repository = pr_repository
         self.pr_transformer = pr_transformer
 
@@ -21,21 +21,20 @@ class AuthService:
         user = await self.github_client.fetch_user(access_token)
         app_log.debug('Github user: {}'.format(user))
         user['viewer']['access_token'] = access_token
-        user = self.user_transformer.create_entity(
+        user_entity = self.user_transformer.create_entity(
             user['viewer'])
-        has_user = await self.user_repository.get_user(user['_id'])
-        if not has_user:
-            await self.user_repository.create_user(user)
+        exist_user = await self.user_repository.get_user(user_entity['_id'])
+        if not exist_user:
+            await self.user_repository.create_user(user_entity)
             prs = []
             for repo in user['viewer']['repositories']['nodes']:
                 for pr in repo['pullRequests']['nodes']:
                     pr['user_id'] = user['viewer']['id']
                     pr['repo_name'] = repo['name']
-                    prs.append(self.pr_transformer.create_entity(pr));
-            
-            
+                    prs.append(self.pr_transformer.create_entity(pr))
+
         else:
-            await self.user_repository.update_tocken(has_user['_id'], access_token)
+            await self.user_repository.update_token(exist_user['_id'], access_token)
 
         return encode({
             'id': user['viewer']['id'],

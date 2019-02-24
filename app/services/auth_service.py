@@ -6,26 +6,39 @@ from .. import settings
 
 class AuthService:
 
-    def __init__(self, github_client, user_repository, user_transformer):
+    def __init__(self, github_client, user_repository, user_transformer, pr_repository, pr_transformer):
         self.github_client = github_client
         self.user_repository = user_repository
         self.user_transformer = user_transformer
 
+        self.pr_repository = pr_repository
+        self.pr_transformer = pr_transformer
+
     async def get_token(self, code):
         auth_response = await self.github_client.authorize(code)
         access_token = auth_response['access_token']
+
         user = await self.github_client.fetch_user(access_token)
         app_log.debug('Github user: {}'.format(user))
-        self.create_user(user['viewer'])
+        user['viewer']['access_token'] = access_token
+        user_entity = self.user_transformer.create_entity(
+            user['viewer'])
+        exist_user = await self.user_repository.get_user(user_entity['_id'])
+        if not exist_user:
+            await self.user_repository.create_user(user_entity)
+            prs = []
+            for repo in user['viewer']['repositories']['nodes']:
+                for pr in repo['pullRequests']['nodes']:
+                    pr['user_id'] = user['viewer']['id']
+                    pr['repo_name'] = repo['name']
+                    prs.append(self.pr_transformer.create_entity(pr))
+
+        else:
+            await self.user_repository.update_token(exist_user['_id'], access_token)
+
         return encode({
             'id': user['viewer']['id'],
             'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=settings.AUTH_EXPIRE)},
             settings.SECRET,
             algorithm='HS256'
         )
-
-    async def create_user(self, git_user_data):
-        user = self.user_transformer.create_entity(git_user_data)
-        hasUser = await self.user_repository.get_user(user['_id'])
-        if not hasUser:
-            self.user_repository.create_user(user)

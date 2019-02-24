@@ -9,7 +9,6 @@ class UserRepository:
         db_url = os.getenv("MONGODB_URL")
         db_name = os.getenv("MONGODB_DB")
         self.collection = MotorClient(db_url)[db_name].users
-        self.data = []
 
     async def get_user(self, user_id):
         return await self.collection.find_one({'_id': user_id})
@@ -20,3 +19,10 @@ class UserRepository:
         except Exception as e:
             app_log.warn(
                 'Cannot save user {}'.format(user_entity))
+
+    async def update_token(self, user_id, token):
+        try:
+            await self.collection.update_one({'_id': user_id}, {'$set': {'token': token}})
+        except Exception as e:
+            app_log.warn(
+                'Cannot update user {} token {}'.format(user_id, token))

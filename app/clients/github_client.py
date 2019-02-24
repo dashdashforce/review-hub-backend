@@ -28,15 +28,21 @@ class GithubClient:
 
     def _build_authorization_request(self, code):
         url = 'https://github.com/login/oauth/access_token'
-        body = (
-            ('client_id', settings.GITHUB_CLIENT_ID),
-            ('client_secret', settings.GUTHUB_CLIENT_SECRET),
-            ('code', code)
-        )
+        body = {
+            'client_id': settings.GITHUB_CLIENT_ID,
+            'client_secret': settings.GUTHUB_CLIENT_SECRET,
+            'code': code
+        }
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'User-Agent': settings.USER_AGENT
+        }
         return HTTPRequest(
             url=url,
             method='POST',
-            body=urlencode(body)
+            body=json_encode(body),
+            headers=headers
         )
 
     async def fetch_user(self, access_token):

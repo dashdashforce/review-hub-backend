@@ -60,7 +60,7 @@ class PullRequest(graphene.ObjectType):
             pr_dict['repo_name']
         )
 
-    def resolve_langs(self):
+    def resolve_langs(self, info):
         return map(Language.map, [])
 
     def resolve_comments(self):

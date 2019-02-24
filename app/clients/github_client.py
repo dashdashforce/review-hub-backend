@@ -5,7 +5,7 @@ from tornado.httpclient import AsyncHTTPClient, HTTPRequest, HTTPError, HTTPResp
 from tornado.log import app_log
 
 from .. import settings
-from .utils import get_debug_request,build_graphql_request
+from .utils import get_debug_request, build_graphql_request
 import json
 
 
@@ -48,6 +48,7 @@ class GithubClient:
     async def fetch_user(self, access_token):
         request = self._build_fetch_user_request(access_token)
         try:
+            app_log.debug('GithubClient: fetching user')
             response = await self.client.fetch(request)
         except HTTPError as e:
             app_log.error(
@@ -55,37 +56,44 @@ class GithubClient:
                     e, e.response.body)
             )
             raise e
-        return json_decode(response.body)['data']
+        decoded_response = json_decode(response.body)
+        if 'data' not in decoded_response:
+            app_log.error(
+                'GithunClient: fetch_user No data in response: {}'.format(decoded_response))
+        return decoded_response['data']
 
     def _build_fetch_user_request(self, access_token):
         return build_graphql_request(access_token, {
-            'query': '''viewer {
-                            avatarUrl(size: 500),
-                            id
-                            email
-                            login
-                            repositories(first:100) {
+            'query': ''' 
+                {
+                    viewer {
+                        avatarUrl(size: 500)
+                        id
+                        email
+                        login
+                        repositories(first: 100) {
+                        nodes {
+                            name
+                            languages(first: 10) {
                             nodes {
                                 name
-                                languages(first:10) {
-                                    nodes {
-                                        name
-                                    }
+                            }
+                            }
+                            pullRequests(first: 100, states: [OPEN]) {
+                            nodes {
+                                id
+                                body
+                                state
+                                commits(first: 10) {
+                                nodes {
+                                    url
                                 }
-                                pullRequests(first:100, states:[OPEN]) {
-                                    nodes {
-                                        id
-                                        body
-                                        state
-                                        commits(first:10) {
-                                            nodes {
-                                                url
-                                            }
-                                        }
-                                    }
                                 }
                             }
+                            }
+                        }
                         }
                     }
-            }'''
+                }
+            '''
         })

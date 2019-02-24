@@ -5,9 +5,10 @@ request_repository = RequestRepository()
 request_transformer = RequestTransformer()
 
 class PullRequestService:
+    NEW_STATUS = 0
     APPROVING_STATUS = 2
     PROCCESING_STATUS = 1
-    PENDING_STATUS = 0
+    PENDING_STATUS = 3
 
     async def assign_pull_request(self, user_id, pr_id):
         pr = await request_repository.get_request(pr_id)
@@ -45,6 +46,13 @@ class PullRequestService:
         pr['comments'] = comments
         request_repository.update_request(pr)
 
-    async def create_pull_request(self, github_pr_data):
+    async def get_pull_requests_feed(self):
+        requests = await request_repository.get_all_pull_requests_per_status(PullRequestService.PENDING_STATUS)
+        return requests
+
+    async def submit_request_to_review(self):
+        pass
+    
+    def create_pull_request(self, github_pr_data):
         pull_request = request_transformer.create_entity(github_pr_data)
         request_repository.create_request(pull_request)

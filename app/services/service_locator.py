@@ -1,6 +1,7 @@
 
 from .auth_service import AuthService
 from .user_service import UserService
+from .pull_request_service import PullRequestService
 from ..clients import github_client
 from ..repository import user_repository, RequestRepository
 from ..entity_transformer import UserTransformer
@@ -16,3 +17,4 @@ class ServiceLocator:
         RequestTransformer()
     )
     user_service = UserService(user_repository)
+    pull_request_service = PullRequestService()

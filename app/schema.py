@@ -7,6 +7,7 @@ from tornado import gen
 from tornado.log import app_log
 from .services import service_locator
 
+pull_request_service = service_locator.pull_request_service
 user_service = service_locator.user_service
 
 
@@ -101,6 +102,12 @@ class Query(graphene.ObjectType):
     user = graphene.Field(User, id=graphene.String())
 
     pull_request = graphene.Field(PullRequest, id=graphene.String())
+
+    pull_requests = graphene.List(PullRequest)
+
+    async def resolve_pull_requests(self, info):
+        pull_requests_result = await pull_request_service.get_pull_requests_feed()
+        return map(PullRequest.map, pull_requests_result)
 
     async def resolve_user(self, info):
         id = info.context.authentication['id']

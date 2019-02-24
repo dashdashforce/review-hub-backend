@@ -42,20 +42,22 @@ class Comment(graphene.ObjectType):
 class PullRequest(graphene.ObjectType):
     id = graphene.String()
     name = graphene.String()
-    code = graphene.String()
+    body = graphene.String()
     user_id = graphene.String()
     status = graphene.String()
+    repo_name = graphene.String()
     langs = graphene.List(Language)
     comments = graphene.List(Comment)
 
     @classmethod
     def map(cls, pr_dict):
         return PullRequest(
-            pr_dict['id'],
+            pr_dict['_id'],
             pr_dict['name'],
-            pr_dict['code'],
+            pr_dict['body'],
             pr_dict['user_id'],
-            pr_dict['status']
+            pr_dict['status'],
+            pr_dict['repo_name']
         )
 
     def resolve_langs(self):
@@ -103,10 +105,16 @@ class Query(graphene.ObjectType):
 
     pull_request = graphene.Field(PullRequest, id=graphene.String())
 
-    pull_requests = graphene.List(PullRequest)
+    pull_requests_feed = graphene.List(PullRequest)
 
-    async def resolve_pull_requests(self, info):
+    review_requests = graphene.List(PullRequest)
+
+    async def resolve_pull_requests_feed(self, info):
         pull_requests_result = await pull_request_service.get_pull_requests_feed()
+        return map(PullRequest.map, pull_requests_result)
+
+    async def resolve_review_requests(self, info):
+        pull_requests_result = await pull_request_service.get_pull_requests_by_user_id(info.context.authentication['id'])
         return map(PullRequest.map, pull_requests_result)
 
     async def resolve_user(self, info):

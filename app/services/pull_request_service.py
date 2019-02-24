@@ -50,6 +50,9 @@ class PullRequestService:
         requests = await request_repository.get_all_pull_requests_per_status(PullRequestService.PENDING_STATUS)
         return requests
 
+    async def get_pull_requests_by_user_id(self, user_id):
+        return request_repository.get_all_pull_requests_by_user_id(user_id)
+
     async def submit_request_to_review(self):
         pass
     

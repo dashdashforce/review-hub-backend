@@ -1,5 +1,6 @@
 from app.entity_transformer import RequestTransformer
 from app.repository import RequestRepository
+from tornado.log import app_log
 
 request_repository = RequestRepository()
 request_transformer = RequestTransformer()
@@ -9,6 +10,11 @@ class PullRequestService:
     APPROVING_STATUS = 2
     PROCCESING_STATUS = 1
     PENDING_STATUS = 3
+    PENDING_DONE = 4
+
+    async def get_pull_request_by_id(self, pr_id):
+        pr = await request_repository.get_request(pr_id)
+        return pr
 
     async def assign_pull_request(self, user_id, pr_id):
         pr = await request_repository.get_request(pr_id)
@@ -53,8 +59,19 @@ class PullRequestService:
     async def get_pull_requests_by_user_id(self, user_id):
         return request_repository.get_all_pull_requests_by_user_id(user_id)
 
-    async def submit_request_to_review(self):
-        pass
+    async def share_request_to_review(self, pr_id):
+        pr = await request_repository.get_request(pr_id)
+
+        pr['status'] = PullRequestService.PENDING_STATUS
+
+        await request_repository.update_request(pr)
+    
+    async def submit_request_to_review(self, pr_id):
+        pr = await request_repository.get_request(pr_id)
+
+        pr['status'] = PullRequestService.PROCCESING_STATUS
+
+        await request_repository.update_request(pr)
     
     def create_pull_request(self, github_pr_data):
         pull_request = request_transformer.create_entity(github_pr_data)

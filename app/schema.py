@@ -122,5 +122,31 @@ class Query(graphene.ObjectType):
     def resolve_pull_request(self, info):
         return PullRequest.map({})
 
+class SharePullRequest(graphene.Mutation):
+    class Arguments:
+        pull_request_id = graphene.String()
 
-schema = graphene.Schema(query=Query)
+    ok = graphene.Boolean()
+
+    async def mutate(self, info, pull_request_id):
+        ok = True
+        await pull_request_service.share_request_to_review(pull_request_id)
+        return SharePullRequest(ok=ok)
+
+class SubmitRequestToReview(graphene.Mutation):
+    class Arguments:
+        pull_request_id = graphene.String()
+
+    ok = graphene.Boolean()
+
+    async def mutate(self, info, pull_request_id):
+        ok = True
+        await pull_request_service.submit_request_to_review(pull_request_id)
+        return SubmitRequestToReview(ok=ok)
+
+class MyMutations(graphene.ObjectType):
+    share_pull_request = SharePullRequest.Field()
+    submit_request_to_review = SubmitRequestToReview.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=MyMutations)

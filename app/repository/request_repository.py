@@ -26,3 +26,10 @@ class RequestRepository:
         except Exception as e:
             app_log.warn(
                 'Cannot update pull request {}'.format(request))            
+
+    async def create_many_request(self, psr):
+        try:
+            await self.collection.insert_many(psr)
+        except Exception as e:
+            app_log.warn(
+                'Cannot save many pull requests {}'.format(psr))                  

@@ -11,7 +11,7 @@ class RequestTransformer(BaseEntityTransformer):
             'token': 'temp',
             'status': 0,
             'langs': [],
-            'commits': gitdata['commits']['nodes']
+            'commits': gitdata['commits']['nodes'],
             'reviewers': [],
             'comments': [],
         }

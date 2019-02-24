@@ -15,15 +15,16 @@ class AuthService:
         self.pr_transformer = pr_transformer
 
     async def get_token(self, code):
-        auth_response = await self.github_client.authorize(code)
-        access_token = auth_response['access_token']
-
+        #auth_response = await self.github_client.authorize(code)
+        #access_token = auth_response['access_token']
+        access_token = "45b66bcf453da95bda8c40bc331347e479c7151e"
         user = await self.github_client.fetch_user(access_token)
         app_log.debug('Github user: {}'.format(user))
         user['viewer']['access_token'] = access_token
         user_entity = self.user_transformer.create_entity(
             user['viewer'])
         exist_user = await self.user_repository.get_user(user_entity['_id'])
+        app_log.debug('exist_user user: {}'.format(exist_user))
         if not exist_user:
             await self.user_repository.create_user(user_entity)
             prs = []

@@ -11,7 +11,8 @@ class RequestRepository:
         self.collection = MotorClient(db_url)[db_name].pull_requests
 
     async def get_request(self, request_id):
-        return await self.collection.find_one({'_id': request_id})
+        pr = await self.collection.find_one({'_id': request_id})
+        return pr
 
     async def get_all_pull_requests_per_status(self, status):
         cursor = self.collection.find({'status': status})
@@ -31,7 +32,9 @@ class RequestRepository:
 
     async def create_request(self, request): 
         try:
+            app_log.debug('request : {}'.format(request))
             await self.collection.insert_one(request)
+            app_log.debug('requesteee : {}'.format(request))
         except Exception as e:
             app_log.warn(
                 'Cannot save pull request {}'.format(request))

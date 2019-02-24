@@ -18,6 +18,8 @@ def jwtauth(handler_class):
     ''' Handle Tornado JWT Auth '''
     def wrap_execute(handler_execute):
         def require_auth(handler, kwargs):
+            if handler.request.method == 'GET':
+                return True
             auth = handler.request.headers.get('Authorization')
             if auth:
                 parts = auth.split()

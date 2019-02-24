@@ -20,3 +20,12 @@ class UserRepository:
         except Exception as e:
             app_log.warn(
                 'Cannot save user {}'.format(user_entity))
+
+    async def update_tocken(self, user_id, token):
+        try:
+            await self.collection.update_one({'_id': user_id}, {'$set': {'token': token}})
+        except Exception as e:
+            app_log.warn(
+                'Cannot update user tocken {}'.format(user_entity))
+        
+    

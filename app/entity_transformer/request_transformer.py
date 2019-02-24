@@ -8,7 +8,6 @@ class RequestTransformer(BaseEntityTransformer):
             'user_id': gitdata['user_id'],
             'name': 'temp',
             'repo_name': gitdata['repo_name'],
-            'token': 'temp',
             'status': 0,
             'langs': [],
             'commits': gitdata['commits']['nodes'],

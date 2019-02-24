@@ -71,6 +71,7 @@ class GithubClient:
                         id
                         email
                         login
+                        name
                         repositories(first: 100) {
                         nodes {
                             name

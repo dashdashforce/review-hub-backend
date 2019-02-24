@@ -6,5 +6,6 @@ class UserTransformer(BaseEntityTransformer):
             '_id': gitdata['id'],
             'token': gitdata['access_token'],
             'imageUrl': gitdata['avatarUrl'],
-            'login': gitdata['login']
+            'login': gitdata['login'],
+            'name': gitdata['name'],
         }

@@ -24,7 +24,6 @@ class GithubClient:
                     e, e.response.body)
             )
             raise e
-        app_log.debug(response.body)
         return json_decode(response.body)
 
     def _build_authorization_request(self, code):

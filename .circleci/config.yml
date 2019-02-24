@@ -19,7 +19,8 @@ jobs:
             cd ./reviewhub
             git fetch --all
             git reset --hard origin/$CIRCLE_BRANCH
-            docker-compose restart
+            docker-compose down
+            docker-compose up --build -d
             exit
 
 workflows:

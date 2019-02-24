@@ -79,6 +79,8 @@ class GithubClient:
                                 languages(first: 10) {
                                     nodes {
                                         name
+                                        id
+                                        color
                                     }
                                 }
                                 pullRequests(first: 100, states: [OPEN]) {

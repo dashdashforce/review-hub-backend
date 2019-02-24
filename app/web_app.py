@@ -8,10 +8,10 @@ class ReviewHubWebApplication(Application):
         self.opts = dict(settings)
 
         handlers = [
-            (r'/graphql', MainApplicationHandler, dict(
+            (r'/api/graphql', MainApplicationHandler, dict(
                 graphiql=True, schema=schema
             )),
-            (r'/auth', AuthHandler)
+            (r'/api/auth', AuthHandler)
         ]
 
         super(ReviewHubWebApplication, self).__init__(handlers, **settings)

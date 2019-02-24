@@ -84,11 +84,9 @@ class User(graphene.ObjectType):
             user_dict['_id'],
             user_dict['imageUrl'],
             user_dict['login'],
-            user_dict['name']
+            user_dict['name'],
+            map(Language.map, user_dict['langs'])
         )
-
-    def resolve_langs(self, info):
-        return map(Language.map, [])
 
     def resolve_pull_requests(self, info):
         return map(PullRequest.map, [])

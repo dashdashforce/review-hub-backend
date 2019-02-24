@@ -25,6 +25,8 @@ class PullRequestService:
 
         if pr['status'] == PullRequestService.PENDING_STATUS:
             pr['status'] = PullRequestService.PROCCESING_STATUS
+        
+        await request_repository.update_request(pr)
 
     async def add_comment_to_pr(self, pr_id, reviewer_id, text):
         pr = await request_repository.get_request(pr_id)
@@ -57,7 +59,8 @@ class PullRequestService:
         return requests
 
     async def get_pull_requests_by_user_id(self, user_id):
-        return request_repository.get_all_pull_requests_by_user_id(user_id)
+        requests = await request_repository.get_all_pull_requests_by_user_id(user_id)
+        return requests
 
     async def share_request_to_review(self, pr_id):
         pr = await request_repository.get_request(pr_id)

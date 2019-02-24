@@ -15,9 +15,9 @@ class AuthService:
         self.pr_transformer = pr_transformer
 
     async def get_token(self, code):
-        #auth_response = await self.github_client.authorize(code)
-        #access_token = auth_response['access_token']
-        access_token = "45b66bcf453da95bda8c40bc331347e479c7151e"
+        auth_response = await self.github_client.authorize(code)
+        access_token = auth_response['access_token']
+
         user = await self.github_client.fetch_user(access_token)
         app_log.debug('Github user: {}'.format(user))
         user['viewer']['access_token'] = access_token

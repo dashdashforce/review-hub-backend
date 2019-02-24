@@ -10,7 +10,7 @@ class AuthService:
         self.github_client = github_client
         self.user_repository = user_repository
         self.user_transformer = user_transformer
-        
+
         self.pr_repository = pr_repository
         self.pr_transformer = pr_transformer
 
@@ -31,11 +31,10 @@ class AuthService:
                 for pr in repo['pullRequests']['nodes']:
                     pr['user_id'] = user['viewer']['id']
                     pr['repo_name'] = repo['name']
-                    prs.append(self.pr_transformer.create_entity(pr));
-            
-            
+                    prs.append(self.pr_transformer.create_entity(pr))
+
         else:
-            await self.user_repository.update_tocken(has_user['_id'], access_token)
+            await self.user_repository.update_token(has_user['_id'], access_token)
 
         return encode({
             'id': user['viewer']['id'],
